@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Items } from "./Components/Items";
 import { TITRE_APP, sub } from "./date/films";
 import FilmCard from "./Components/FilmCard";
@@ -14,6 +14,8 @@ import {
   Stack,
   Button,
   Drawer,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { ButtonAppBar } from "./Components/ButtonAppBar";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -37,7 +39,7 @@ function App() {
     setLikesState((prev) => ({ prev, [id]: newLikes }));
   };
   const [favoris, setFavoris] = useState([]);
-  const favoriteCount = films.filter((films) => films.likes > 0).length;
+  const favoriteCount = favoris.length;
   const toggleFavori = (id) => {
     if (favoris.includes(id)) {
       setFavoris(favoris.filter((favId) => favId !== id));
@@ -55,12 +57,17 @@ function App() {
     setMovies((prevMovie) => [newMovie, ...prevMovies]);
     setShowForm(false);
   };
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <stack>
+    <Stack position="relative">
       {" "}
       <Container maxWidth="xl">
-        <ButtonAppBar favoriteCount={favoriteCount} titre={TITRE_APP} sousTitre={sub} />
+        <ButtonAppBar
+          favoriteCount={favoriteCount}
+          titre={TITRE_APP}
+          sousTitre={sub}
+        />
 
         <Stack
           direction={"row"}
@@ -149,6 +156,14 @@ function App() {
                   {" "}
                   <Button
                     sx={{
+                      position: {
+                        xs: "absolute",
+                        sm: "absolute",
+                        md: "static",
+                      },
+                      top: { xs: 0 },
+                      right: { xs: 130 },
+                      zIndex: 999,
                       textTransform: "capitalize",
                       p: "10px 25px",
                       borderRadius: 2,
@@ -162,7 +177,7 @@ function App() {
                     Ajouter un film
                   </Button>
                   <Drawer
-                    anchor="right"
+                    anchor={isMobile ? "bottom" : "right"}
                     open={showForm}
                     onClose={(event, reason) => {
                       if (reason == "backdropClick") {
@@ -171,7 +186,14 @@ function App() {
                       setShowForm(false);
                     }}
                   >
-                    <Box sx={{ width: 400, p: 2 }}>
+                    <Box
+                      sx={{
+                        width: { xs: "100%", sm: 400 },
+                        maxHeight: { xs: "80vh", sm: "100vh" },
+                        p: 2,
+                        overflowY: "auto",
+                      }}
+                    >
                       {" "}
                       <Items
                         onAddMovie={handleAddMovie}
@@ -342,7 +364,7 @@ function App() {
           </Box> */}
         </Box>
       </Container>
-    </stack>
+    </Stack>
   );
 }
 
