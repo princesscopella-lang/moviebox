@@ -67,7 +67,11 @@ function FilmCard({ titre, annee, genre, estFavori, onToggle, image }) {
             </Stack>
             <Stack>
               <Stack direction={"row"} spacing={20}>
-                <Typography variant="h5"  component="h3"sx={{ fontWeight: "bold" }}>
+                <Typography
+                  variant="h5"
+                  component="h3"
+                  sx={{ fontWeight: "bold" }}
+                >
                   {titre}
                 </Typography>
 
@@ -84,17 +88,17 @@ function FilmCard({ titre, annee, genre, estFavori, onToggle, image }) {
                 )}
               </Stack>
 
-              <Typography
-               
-                sx={{ mt: 2 }}
-              >
-                Annee: {annee}
-              </Typography>
+              <Typography sx={{ mt: 2 }}>Annee: {annee}</Typography>
               <Typography variant="body2" color="text.secondary">
                 Genre: {genre}
               </Typography>
               <Stack direction="row" sx={{ mt: 5 }}>
-                <Typography variant="body2" sx={{ fontSize: "15px" }}>
+                <Typography variant="body2" sx={{ fontSize: "20px" }}>
+                  {" "}
+                  <Icon
+                    icon="andrsrxn:heart-filled"
+                    style={{ fontSize: "17px", color: "red" }}
+                  />{" "}
                   {likes}
                   {likes <= 1 ? "like" : "likes"}
                 </Typography>
@@ -121,12 +125,19 @@ function FilmCard({ titre, annee, genre, estFavori, onToggle, image }) {
             }}
           >
             <Bouton
+              startIcon={
+                <Icon
+                  icon="mdi:heart"
+                  style={{ fontSize: "24px", color: "#5382c3" }}
+                />
+              }
               texte="J'aime"
               color="error"
               onClick={handleLike}
               textColor="white"
               // bgColor={"red"}
             />
+
             <Bouton
               texte="J'aime plus"
               color="inherit"

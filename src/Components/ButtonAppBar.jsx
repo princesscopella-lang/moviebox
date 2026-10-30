@@ -59,13 +59,21 @@ export function ButtonAppBar({ titre, sousTitre, favoriteCount }) {
               sx={{
                 border: "1px solid rgba(240, 235, 235, 4)",
                 borderRadius: 2,
-                padding: "12px 45px",
-                width: "150px",
+                padding: { xs: "8px 16px", sm: "12px 45px" },
+                width: { xs: "100%", sm: "auto" },
                 boxShadow: "1px 4px 20px -3px rgba(240, 235, 235, 0.47)",
                 background: "white",
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: "center",
+                gap: 1,
               }}
             >
               <Stack direction={"row"} spacing={1}>
+                <Icon
+                  icon="andrsrxn:heart-filled"
+                  style={{ color: "red", fontSize: "24px" }}
+                />
                 <Typography
                   variant="body1"
                   sx={{

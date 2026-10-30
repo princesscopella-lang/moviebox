@@ -12,18 +12,18 @@ export function Items({ onAddMovie,onClose }) {
   const [error, setError] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim() / !year / !genre / !posterUrl.trim()) {
-      setError("Vruillez remplir tous les champs.");
-      return;
-    }
+   if (!title.trim() || !year || !genre || !posterUrl.trim()) {
+     setError("Veuillez remplir tous les champs.");
+     return;
+   }
     setError("");
 
     const newFilm = {
       id: Date.now(),
-      title: title.trim(),
-      year: year.trim(),
+      titre: title.trim(),
+      annee: Number(year),
       genre: genre.trim(),
-      posterUrl: posterUrl.trim(),
+      image: posterUrl.trim(),
       likes: 0,
       estRecent: true,
     };
@@ -33,6 +33,7 @@ export function Items({ onAddMovie,onClose }) {
     setGenre("");
     setYear("");
     setPosterUrl("");
+    onClose();
   };
   return (
     <Box
@@ -124,13 +125,16 @@ export function Items({ onAddMovie,onClose }) {
         type="submit"
         variant="contained"
         color="primary"
+        
         sx={{ textTransform: "capitalize" }}
       >
         Ajouter le film
       </Button>
       {onClose && (
-        <Button sx={{ position: "absolute" , right: 1,
-                      top: 10,color:"inherit"}} onClick={onClose}>
+        <Button
+          sx={{ position: "absolute", right: 1, top: 10, color: "inherit" }}
+          onClick={onClose}
+        >
           x
         </Button>
       )}

@@ -31,34 +31,47 @@ function App() {
     4: 0,
     5: 0,
   });
-  const totalLikes = Object.values(likesState).reduce(
-    (acc, curr) => acc + curr,
-    0,
-  );
-  const updateLikes = (id, newLikes) => {
-    setLikesState((prev) => ({ prev, [id]: newLikes }));
-  };
+
   const [favoris, setFavoris] = useState([]);
-  const favoriteCount = favoris.length;
-  const toggleFavori = (id) => {
-    if (favoris.includes(id)) {
-      setFavoris(favoris.filter((favId) => favId !== id));
-    } else {
-      setFavoris([...favoris, id]);
-    }
-  };
-  const [value, setValue] = React.useState(1);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  const [value, setValue] = useState(1);
+  const [search, setSearch] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const filmsList = films.filter((film) => favoris.includes(film.id));
-  const handleAddMovie = (newMovie) => {
-    setMovies((prevMovie) => [newMovie, ...prevMovies]);
-    setShowForm(false);
+
+  const [movies, setMovies] = useState(films);
+
+  const favoriteCount = favoris.length;
+
+  const toggleFavori = (id) => {
+    setFavoris((prev) =>
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id],
+    );
   };
+
+  const handleChangeNew = (event) => {
+    setSelectedGenre(event.target.value);
+  };
+
+  const handleAddMovie = (newFilm) => {
+    setMovies((prev) => [...prev, newFilm]);
+  };
+
+  const displayedMovies = movies.filter((film) => {
+    const matchesSearch = film.titre
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesGenre = selectedGenre === "" || films.genre === selectedGenre;
+
+    const matchesFavorites = value === 1 || favoris.includes(film.id);
+
+    return matchesSearch && matchesGenre && matchesFavorites;
+  });
   const theme = useTheme();
+
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // Ton return vient ici...
+
   return (
     <Stack position="relative">
       {" "}
@@ -110,11 +123,17 @@ function App() {
                 </Button>
                 <Button
                   onClick={() => setValue(2)}
+                  startIcon={
+                    <Icon
+                      icon="andrsrxn:heart-filled"
+                      style={{ fontSize: "24px", color: "#5382c3" }}
+                    />
+                  }
                   disableElevation
                   variant={value === 2 ? "contained" : "outlined"}
                   sx={{
                     textTransform: "capitalize",
-                    p: "10px 25px",
+                    p: "10px 30px",
                     borderRadius: 2,
                   }}
                 >
@@ -126,6 +145,8 @@ function App() {
               <Stack direction={"row"} spacing={2}>
                 <TextField
                   placeholder="Rechercher un film.. "
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   variant="outlined"
                   InputProps={{
                     startAdornment: (
@@ -151,19 +172,24 @@ function App() {
                   }}
                 />
 
-                <SelectEst />
+                <SelectEst
+                  selectedGenre={selectedGenre}
+                  handleChangeNew={handleChangeNew}
+                />
+
                 <Box sx={{ my: 2 }}>
                   {" "}
                   <Button
                     sx={{
                       position: {
-                        xs: "absolute",
-                        sm: "absolute",
+                        xs: "fixed",
+                        sm: "ab",
                         md: "static",
                       },
-                      top: { xs: 0 },
-                      right: { xs: 130 },
-                      zIndex: 999,
+                      bottom: { xs: 16, sm: "auto" },
+                      right: { xs: 170, sm: "auto" },
+                      zIndex: 1000,
+                      // width: { xs: "calc(100% - 32px" },
                       textTransform: "capitalize",
                       p: "10px 25px",
                       borderRadius: 2,
@@ -174,7 +200,7 @@ function App() {
                     color="primary"
                     onClick={() => setShowForm(!showForm)}
                   >
-                    Ajouter un film
+                    {isMobile ? "+" : "Ajouter un film"}
                   </Button>
                   <Drawer
                     anchor={isMobile ? "bottom" : "right"}
@@ -194,7 +220,6 @@ function App() {
                         overflowY: "auto",
                       }}
                     >
-                      {" "}
                       <Items
                         onAddMovie={handleAddMovie}
                         onClose={() => setShowForm(false)}
@@ -218,151 +243,32 @@ function App() {
             </Stack>
           </Stack>
         </Stack>
-        <Box
-          sx={{
-            mt: 2,
-          }}
-        >
-          {value === 1 ? (
-            <>
-              <Grid container columnSpacing={2} rowSpacing={5}>
-                {films.map((film) => {
-                  const estFavori = favoris.includes(film.id);
-                  return (
-                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={film.id}>
-                      <FilmCard
-                        titre={film.titre}
-                        annee={film.annee}
-                        genre={film.genre}
-                        estFavori={estFavori}
-                        onToggle={() => toggleFavori(film.id)}
-                        image={film.image}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </>
-          ) : (
-            <>
-              {filmsList.length === 0 ? (
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  Aucun film dans cette catégorie.
-                </Alert>
-              ) : (
-                <Grid container spacing={2}>
-                  {filmsList.map((film) => (
-                    <Grid item key={film.id} xs={12} sm={6} md={4}>
-                      <FilmCard
-                        titre={film.titre}
-                        annee={film.annee}
-                        genre={film.genre}
-                        image={film.image}
-                        isFavori={favoris.includes(film.id)}
-                        onToggleFavori={toggleFavori}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
-            </>
-          )}
-          {/* <Box sx={{ width: "100%", color: "text.secondary", mt: 4, mb: 4 }}>
-            <TabContext value={value}>
-              <Box
-                sx={{
-                  border: 1,
-                  borderColor: "#f4eeee",
-                  borderRadius: 3,
-                  backgroundColor: "#f5f5f5",
-                  gap: 15,
-                  display: "flex",
-                  direction: "row",
-                }}
-              >
-                <Box
-                  sx={{
-                    border: 1,
-                    borderColor: "#f4eeee",
-                    borderRadius: 2,
-                    backgroundColor: "#f8f9fa",
-                  }}
-                >
-                  <TabList
-                    onChange={handleChange}
-                    aria-label="lab tabs"
-                    indicatorColor="primary"
-                    textColor="secondary"
-                    sx={{ height: "25px" }}
-                  >
-                    <Tab
-                      label="Tous les films"
-                      value="1"
-                      sx={{ textTransform: "none" }}
-                    />
-                    <Tab
-                      label="Mes favoris"
-                      value="2"
-                      sx={{ textTransform: "none" }}
-                    />
-                  </TabList>
-                </Box>
-                <TextField
-                  label="Rechercher un film.. "
-                  variant="outlined"
-                  sx={{
-                    border: 1,
-                    borderColor: "#f4eeee",
-                    borderRadius: 2,
-                    backgroundColor: "#f8f9fa",
-                  }}
-                />
-              </Box>
 
-              <TabPanel value="1" tabIndex={0}>
-                <Grid container columnSpacing={2} rowSpacing={5}>
-                  {films.map((film) => {
-                    const estFavori = favoris.includes(film.id);
-                    return (
-                      <Grid size={{ xs: 12, sm: 6, md: 4 }} key={film.id}>
-                        <FilmCard
-                          titre={film.titre}
-                          annee={film.annee}
-                          genre={film.genre}
-                          estFavori={estFavori}
-                          onToggle={() => toggleFavori(film.id)}
-                          image={film.image}
-                        />
-                      </Grid>
-                    );
-                  })}
+        {/* AFFICHAGE DES FILMS */}
+        <Box sx={{ mt: 2 }}>
+          {displayedMovies.length === 0 ? (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              Aucun film trouvé.
+            </Alert>
+          ) : (
+            <Grid container columnSpacing={2} rowSpacing={5}>
+              {displayedMovies.map((film) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={film.id}>
+                  <FilmCard
+                    titre={film.titre}
+                    annee={film.annee}
+                    genre={film.genre}
+                    estFavori={favoris.includes(film.id)}
+                    onToggle={() => toggleFavori(film.id)}
+                    image={film.image}
+                  />
                 </Grid>
-              </TabPanel>
-              <TabPanel value="2" tabIndex={0}>
-                {filmsList.length === 0 ? (
-                  <Alert severity="info" sx={{ mt: 2 }}>
-                    Aucun film dans cette catégorie.
-                  </Alert>
-                ) : (
-                  <Grid container spacing={2}>
-                    {filmsList.map((film) => (
-                      <Grid item key={film.id} xs={12} sm={6} md={4}>
-                        <FilmCard
-                          titre={film.titre}
-                          annee={film.annee}
-                          genre={film.genre}
-                          image={film.image}
-                          isFavori={favoris.includes(film.id)}
-                          onToggleFavori={toggleFavori}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                )}
-              </TabPanel>
-            </TabContext>
-          </Box> */}
+              ))}
+            </Grid>
+          )}
         </Box>
+
+        {/* {/* <Box sx={{ mt: 2 }}> */}
       </Container>
     </Stack>
   );
