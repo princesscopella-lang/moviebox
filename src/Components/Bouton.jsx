@@ -1,7 +1,8 @@
 import { Button } from "@mui/material";
-function Bouton({ texte, onClick, color, disabled, textColor = "white", bgColor }) {
+function Bouton({ texte, onClick, color, disabled, textColor = "white", bgColor, startIcon }) {
   return (
     <Button
+    startIcon={startIcon}
       variant="contained"
       size="large"
       color={color}

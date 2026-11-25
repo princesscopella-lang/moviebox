@@ -98,7 +98,7 @@ function FilmCard({ titre, annee, genre, estFavori, onToggle, image }) {
                   <Icon
                     icon="andrsrxn:heart-filled"
                     style={{ fontSize: "17px", color: "red" }}
-                  />{" "}
+                  />
                   {likes}
                   {likes <= 1 ? "like" : "likes"}
                 </Typography>
@@ -112,7 +112,17 @@ function FilmCard({ titre, annee, genre, estFavori, onToggle, image }) {
                   fontSize: "19px",
                 }}
               >
-                {messagelikes}
+                {messagelikes === "Coup de coeur" ? (
+                  <>
+                    <Icon
+                      icon="emojione-v1:fire"
+                      style={{ fontSize: "17px", color: "red" }}
+                    />
+                    {messagelikes}
+                  </>
+                ) : (
+                  messagelikes
+                )}
               </Typography>
             </Stack>
           </Stack>
@@ -128,7 +138,7 @@ function FilmCard({ titre, annee, genre, estFavori, onToggle, image }) {
               startIcon={
                 <Icon
                   icon="mdi:heart"
-                  style={{ fontSize: "24px", color: "#5382c3" }}
+                  style={{ fontSize: "24px", color: "white" }}
                 />
               }
               texte="J'aime"
